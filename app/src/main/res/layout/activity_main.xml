@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="ble"
+            type="int" />
+
+        <variable
+            name="finding"
+            type="Boolean" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#f8f8f8"
+        tools:context=".MainActivity">
+
+        <TextView
+            android:id="@+id/app_bar"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:paddingLeft="20dp"
+            android:gravity="center_vertical"
+            android:text="加动T1测试工具"
+            android:textSize="20dp"
+            android:textColor="#FFF"
+            android:background="@color/colorPrimary"/>
+
+        <ImageView
+            app:layout_constraintTop_toTopOf="@id/app_bar"
+            app:layout_constraintRight_toRightOf="@id/app_bar"
+            app:layout_constraintBottom_toBottomOf="@id/app_bar"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/files"
+            android:onClick="openFileLogs"
+            />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_1"
+            app:layout_constraintTop_toBottomOf="@id/app_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            />
+
+        <TextView
+            app:layout_constraintTop_toBottomOf="@id/app_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="#F0F0F0"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:textSize="16sp"
+            android:textColor="@color/colorAccent"
+            android:text="@{@stringArray/ble_errors[ble]}"
+            android:gravity="center"
+            android:visibility="@{ble == 0 ? View.GONE : View.VISIBLE}"
+            />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_query"
+            android:layout_width="wrap_content"
+            app:elevation="6dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:clickable="true"
+            app:borderWidth="0dp"
+            android:backgroundTint="@color/query_bg"
+            app:rippleColor="#0097a7"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="20dp"
+            android:src="@mipmap/query"
+            app:pressedTranslationZ="12dp"
+            android:layout_height="wrap_content"
+            android:onClick="onBeginClick"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">简化T1测试</string>
+
+    <string name="query">开始搜索</string>
+    <string name="stop_query">停止搜索</string>
+
+    <string name="begin">开始</string>
+    <string name="stop">停止</string>
+
+    <string name="seq">序号</string>
+    <string name="smo2">肌氧</string>
+    <string name="ele">电量</string>
+    <string name="ver">版本</string>
+    <string name="error">警告</string>
+
+    <string-array name="ble_errors">
+        <item>当前蓝牙正常</item>
+        <item>当前手机不支持蓝牙</item>
+        <item>当前手机未开启蓝牙</item>
+        <item>无蓝牙权限</item>
+        <item>无蓝牙权限,请打开蓝牙权限</item>
+        <item>无蓝牙权限,权限被禁止</item>
+        <item>未知异常</item>
+    </string-array>
+
+
+</resources>

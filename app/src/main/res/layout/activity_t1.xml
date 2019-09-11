@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <import type="android.view.View" />
+
+        <variable
+            name="dev"
+            type="tech.getwell.demo.beans.BleDevice" />
+
+        <variable
+            name="isValid"
+            type="Boolean" />
+
+        <variable
+            name="devMsg"
+            type="String" />
+
+        <variable
+            name="smo2Data"
+            type="tech.getwell.t1.beans.Smo2Data" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:fitsSystemWindows="true">
+
+        <View
+            android:id="@+id/v_bg"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:background="@drawable/t1_bg"/>
+
+        <ImageView
+            app:layout_constraintTop_toTopOf="@id/v_bg"
+            app:layout_constraintBottom_toBottomOf="@id/v_bg"
+            app:layout_constraintRight_toRightOf="@id/v_bg"
+            app:layout_constraintLeft_toLeftOf="@id/v_bg"
+            android:layout_width="150dp"
+            android:layout_height="200dp"
+            android:background="@mipmap/smo2_bg"
+            />
+
+        <TextView
+            android:id="@+id/tv_smo2"
+            android:paddingRight="5dp"
+            app:layout_constraintTop_toTopOf="@id/v_bg"
+            app:layout_constraintBottom_toBottomOf="@id/v_bg"
+            app:layout_constraintRight_toRightOf="@id/v_bg"
+            app:layout_constraintLeft_toLeftOf="@id/v_bg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{String.valueOf(smo2Data.smo2),default=75}"
+            android:textSize="64sp"
+            android:textColor="#FFF"
+            android:fontFamily="@font/oswald_regular"
+            />
+
+        <TextView
+            android:layout_marginBottom="15dp"
+            app:layout_constraintLeft_toRightOf="@id/tv_smo2"
+            app:layout_constraintBottom_toBottomOf="@id/tv_smo2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="%"
+            android:textColor="#FFF"
+            android:textSize="18sp"/>
+
+        <TextView
+            app:layout_constraintTop_toBottomOf="@id/tv_smo2"
+            app:layout_constraintRight_toRightOf="@id/v_bg"
+            app:layout_constraintLeft_toLeftOf="@id/v_bg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:textColor="#FFF"
+            android:text="肌氧"/>
+
+        <TextView
+            android:id="@+id/tv_dev"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@{dev.name,default=NAME}"
+            android:textSize="16sp"
+            android:textColor="#FFF"
+            app:layout_constraintBottom_toBottomOf="@id/v_bg"
+            app:layout_constraintLeft_toLeftOf="@id/v_bg"
+            app:layout_constraintRight_toRightOf="@id/v_bg"
+            android:layout_marginBottom="25dp"
+             />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@{devMsg,default=dejkldajflkja}"
+            android:textSize="12dp"
+            android:textColor="#FFF"
+            app:layout_constraintBottom_toBottomOf="@id/v_bg"
+            app:layout_constraintLeft_toLeftOf="@id/v_bg"
+            app:layout_constraintRight_toRightOf="@id/v_bg"
+            android:layout_marginBottom="10dp"
+             />
+
+        <Button
+            app:layout_constraintBottom_toBottomOf="@id/v_bg"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="跑步"
+            android:onClick="onStartRunningClick"
+            />
+
+        <Button
+            app:layout_constraintBottom_toBottomOf="@id/v_bg"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="抗阻"
+            android:onClick="onStartResistanceClick"
+            />
+
+        <TextView
+            android:id="@+id/v_label_1"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="序号"
+            android:textSize="14dp"
+            android:textColor="@color/c_35"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/v_label_2"
+            app:layout_constraintTop_toBottomOf="@+id/v_bg" />
+
+        <TextView
+            android:id="@+id/v_label_2"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="肌氧"
+            android:textSize="14dp"
+            android:textColor="@color/c_35"
+            app:layout_constraintLeft_toRightOf="@id/v_label_1"
+            app:layout_constraintRight_toLeftOf="@id/v_label_3"
+            app:layout_constraintTop_toTopOf="@id/v_label_1" />
+
+        <TextView
+            android:id="@+id/v_label_3"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="电量"
+            android:textSize="14dp"
+            android:textColor="@color/c_35"
+            app:layout_constraintLeft_toRightOf="@id/v_label_2"
+            app:layout_constraintRight_toLeftOf="@id/v_label_4"
+            app:layout_constraintTop_toTopOf="@id/v_label_1" />
+
+        <TextView
+            android:id="@+id/v_label_4"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="版本"
+            android:textSize="14dp"
+            android:textColor="@color/c_35"
+            app:layout_constraintLeft_toRightOf="@id/v_label_3"
+            app:layout_constraintRight_toLeftOf="@id/v_label_5"
+            app:layout_constraintTop_toTopOf="@id/v_label_1" />
+
+        <TextView
+            android:id="@+id/v_label_5"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="警告"
+            android:textSize="14dp"
+            android:textColor="@color/c_35"
+            app:layout_constraintLeft_toRightOf="@id/v_label_4"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/v_label_1" />
+
+        <View
+            app:layout_constraintTop_toBottomOf="@id/v_label_1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/c_e5"/>
+
+        <!-- 原始数据 -->
+        <TextView
+            android:id="@+id/v_o_1"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="@{smo2Data.nn}"
+            android:textSize="16dp"
+            android:textColor="#000"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/v_o_2"
+            app:layout_constraintTop_toBottomOf="@+id/v_label_1" />
+
+        <TextView
+            android:id="@+id/v_o_2"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="@{smo2Data.xx}"
+            android:textSize="14dp"
+            app:layout_constraintLeft_toRightOf="@id/v_o_1"
+            app:layout_constraintRight_toLeftOf="@id/v_o_3"
+            app:layout_constraintTop_toTopOf="@id/v_o_1" />
+
+        <TextView
+            android:id="@+id/v_o_3"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="@{smo2Data.yy}"
+            android:textSize="14dp"
+            app:layout_constraintLeft_toRightOf="@id/v_o_2"
+            app:layout_constraintRight_toLeftOf="@id/v_o_4"
+            app:layout_constraintTop_toTopOf="@id/v_o_1" />
+
+        <TextView
+            android:id="@+id/v_o_4"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="@{smo2Data.zz}"
+            android:textSize="14dp"
+            app:layout_constraintLeft_toRightOf="@id/v_o_3"
+            app:layout_constraintRight_toLeftOf="@id/v_o_5"
+            app:layout_constraintTop_toTopOf="@id/v_o_1" />
+
+        <TextView
+            android:id="@+id/v_o_5"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="@{smo2Data.ss}"
+            android:textSize="14dp"
+            app:layout_constraintLeft_toRightOf="@id/v_o_4"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/v_o_1" />
+
+        <!-- 值 -->
+
+
+        <TextView
+            android:id="@+id/v_value_1"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="@{String.valueOf(smo2Data.seq)}"
+            android:textSize="16dp"
+            android:textColor="#000"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/v_value_2"
+            app:layout_constraintTop_toBottomOf="@+id/v_o_1" />
+
+        <TextView
+            android:id="@+id/v_value_2"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="@{String.valueOf(smo2Data.smo2)}"
+            android:textSize="14dp"
+            app:layout_constraintLeft_toRightOf="@id/v_value_1"
+            app:layout_constraintRight_toLeftOf="@id/v_value_3"
+            app:layout_constraintTop_toTopOf="@id/v_value_1" />
+
+        <TextView
+            android:id="@+id/v_value_3"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="@{String.valueOf(smo2Data.ele)}"
+            android:textSize="14dp"
+            app:layout_constraintLeft_toRightOf="@id/v_value_2"
+            app:layout_constraintRight_toLeftOf="@id/v_value_4"
+            app:layout_constraintTop_toTopOf="@id/v_value_1" />
+
+        <TextView
+            android:id="@+id/v_value_4"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="@{String.valueOf(smo2Data.version)}"
+            android:textSize="14dp"
+            app:layout_constraintLeft_toRightOf="@id/v_value_3"
+            app:layout_constraintRight_toLeftOf="@id/v_value_5"
+            app:layout_constraintTop_toTopOf="@id/v_value_1" />
+
+        <TextView
+            android:id="@+id/v_value_5"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:text="@{String.valueOf(smo2Data.status)}"
+            android:textSize="14dp"
+            app:layout_constraintLeft_toRightOf="@id/v_value_4"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/v_value_1" />
+
+        <TextView
+            android:layout_marginBottom="25dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_width="69dp"
+            android:layout_height="69dp"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textColor="#FFF"
+            android:background="@drawable/btn_t1_opt_bg"
+            android:text="结束"
+            android:onClick="onStopClick"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:background="#F0F0F0"
+            android:textSize="16sp"
+            android:textColor="@color/colorAccent"
+            android:text="当前设备固件版本过低,请升级固件后再试"
+            app:layout_constraintTop_toBottomOf="@id/v_bg"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:visibility="@{isValid ? View.GONE : View.VISIBLE}"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

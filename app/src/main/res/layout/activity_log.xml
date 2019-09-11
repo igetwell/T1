@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="filePath"
+            type="String" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/app_bar"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:paddingLeft="20dp"
+            android:gravity="center_vertical"
+            android:text="文件记录"
+            android:textSize="20dp"
+            android:textColor="#FFF"
+            android:background="@color/colorPrimary"/>
+
+        <TextView
+            android:id="@+id/tv_path"
+            app:layout_constraintTop_toBottomOf="@id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:textSize="14dp"
+            android:lines="1"
+            android:ellipsize="end"
+            android:paddingLeft="5dp"
+            android:gravity="center_vertical"
+            android:textColor="#7D7D7D"
+            android:text="@{filePath}"/>
+
+        <View
+            android:id="@+id/v_line"
+            app:layout_constraintTop_toBottomOf="@id/tv_path"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/c_e5"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            app:layout_constraintTop_toBottomOf="@id/v_line"
+            android:id="@+id/rv"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
