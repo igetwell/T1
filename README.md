@@ -7,7 +7,7 @@ Gradle
 ```
 dependencies {
     ...
-    implementation 'com.github.wavezhang0504:JD:1.0.0'
+    implementation 'com.github.igetwell:T1:Tag'
 }
 ```
 Usage
