@@ -13,7 +13,9 @@ public final class LogUtils {
     /**
      * Log default tag.
      */
-    private static String sTagDefault = "jiadong";
+    private static String sTagDefault = "JD";
+
+    private static boolean debug = true;
 
     /**
      * 判断程序是否已经正式上线
@@ -39,6 +41,10 @@ public final class LogUtils {
      * 是否打印行数
      */
     private static boolean sToggleFileLineNumber = true;
+
+    public static void setDebug(boolean debug) {
+        LogUtils.debug = debug;
+    }
 
     public static void e(String tag, String msg, Throwable e) {
         printLog(Log.ERROR, tag, msg, e);
@@ -102,6 +108,10 @@ public final class LogUtils {
 
     private static void printLog(int logType, String tag, String msg,
                                  Throwable e) {
+        if(!debug){
+            return;
+        }
+
         String tagStr = (tag == null) ? sTagDefault : tag;
         if (sToggleRelease) {
             if (logType < Log.INFO) {
