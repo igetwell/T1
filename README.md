@@ -5,6 +5,13 @@
 Gradle
 ------
 ```
+allprojects {
+    repositories {
+        ...
+        maven {url 'https://jitpack.io'}
+    }
+}
+
 dependencies {
     ...
     implementation 'com.github.igetwell:T1:Tag'
