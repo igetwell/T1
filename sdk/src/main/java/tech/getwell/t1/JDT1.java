@@ -36,7 +36,7 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
     To2DataTimer to2DataTimer;
 
     public JDT1(){
-        //LogUtils.setDebug(false);
+        LogUtils.setDebug(false);
     }
 
     public void setListener(OnJDT1Listener listener) {
