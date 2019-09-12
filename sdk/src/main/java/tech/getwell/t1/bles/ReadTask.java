@@ -57,7 +57,8 @@ public class ReadTask extends Thread {
                 // 不能全部占用CPU，要稍微释放
                 Thread.sleep(10);
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
+                if(listener != null)listener.onError(e);
                 return;
             }
         }

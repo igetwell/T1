@@ -8,6 +8,8 @@ import tech.getwell.t1.beans.Response;
 import tech.getwell.t1.bles.ReadTask;
 import tech.getwell.t1.listeners.OnJDT1Listener;
 import tech.getwell.t1.listeners.OnReadListener;
+import tech.getwell.t1.timrs.To2DataTimer;
+import tech.getwell.t1.timrs.To2TimeOutTask;
 import tech.getwell.t1.utils.Errors;
 import tech.getwell.t1.utils.LogUtils;
 
@@ -15,7 +17,11 @@ import tech.getwell.t1.utils.LogUtils;
  * @author Wave
  * @date 2019/9/6
  */
-public class JDT1 implements OnReadListener {
+public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListener {
+
+    public final static int RUNNING = 0;
+
+    public final static int RESISTANCE = 1;
 
     boolean isRunning;
 
@@ -27,6 +33,8 @@ public class JDT1 implements OnReadListener {
 
     ReadTask readTask;
 
+    To2DataTimer to2DataTimer;
+
     public void setListener(OnJDT1Listener listener) {
         this.listener = listener;
     }
@@ -37,16 +45,43 @@ public class JDT1 implements OnReadListener {
 
     public void setBluetoothSocket(BluetoothSocket bluetoothSocket) throws IOException{
         this.bluetoothSocket = bluetoothSocket;
+        createReadTask();
+    }
+
+    void createReadTask()throws IOException{
+        if(this.bluetoothSocket == null){
+            new RuntimeException("bluetoothSocket is null");
+            return;
+        }
+        if(readTask != null){
+            readTask.clear();
+        }
         readTask = new ReadTask(this.bluetoothSocket.getInputStream()) ;
         readTask.setListener(this);
         readTask.start();
+
+        // 发送停止接受数据命令
+        send(getCommand(-1));
+    }
+
+
+    To2DataTimer newTo2DataTimer(){
+        closeTimer();
+        return new To2DataTimer.Builder().setTimeOut(timeout).setTimeOutListener(this).build();
+    }
+
+    void closeTimer(){
+        if(to2DataTimer != null){
+            to2DataTimer.close();
+        }
+        to2DataTimer = null;
     }
 
     /**
      * 开始运动
      */
     public void start(){
-        start(10);
+        start(RUNNING);
     }
 
     /**
@@ -58,9 +93,13 @@ public class JDT1 implements OnReadListener {
             callback(new Callback(Errors.BLE_BAD));
             return;
         }
+        findByVersion();
+        to2DataTimer = newTo2DataTimer();
+        to2DataTimer.start();
+
         // 启动读取数据
-        readTask.setMode(mode);
-        isRunning = send(getCommand(mode));
+        readTask.setMode(getMode(mode));
+        isRunning = send(getCommand(getMode(mode)));
     }
 
     /**
@@ -72,10 +111,20 @@ public class JDT1 implements OnReadListener {
         send(getCommand(-1));
     }
 
-    public void onDestroy(){
-
+    public void close(){
+        if(readTask != null){
+            readTask.clear();
+            readTask.stop();
+        }
     }
 
+    void findByVersion(){
+        send(getCommand(999));
+    }
+
+    int getMode(int mode){
+        return mode == RUNNING ? 10 : 11;
+    }
     /**
      * 获取设备指令
      * @param command
@@ -123,6 +172,7 @@ public class JDT1 implements OnReadListener {
         }
         if(bs == null){
             LogUtils.e(" 未知的指令");
+            callback(new Callback(Errors.OTHER));
             return false;
         }
 
@@ -174,11 +224,31 @@ public class JDT1 implements OnReadListener {
 
     @Override
     public void onSmo2Callback(RawSmo2Data rawSmo2Data) {
-        callback(new Callback(Errors.NONE,rawSmo2Data.smoothSmo2,rawSmo2Data.smo2));
+        closeTimer();
+        isRunning = true;
+        callback(new Callback(Errors.NONE,rawSmo2Data.smo2,rawSmo2Data.smoothSmo2));
     }
 
     @Override
     public void onFirmwareVersionCallback(boolean isValid, int version) {
+        if(!isValid)closeTimer();
+        isRunning = isValid;
         callback(new Callback(Errors.VER));
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+        LogUtils.d("蓝牙连接已断开...");
+        isRunning = false;
+        closeTimer();
+        callback(new Callback(Errors.BLE_BAD));
+    }
+
+    @Override
+    public void onTimeOutCallback() {
+        LogUtils.d("响应超时了...");
+        isRunning = false;
+        closeTimer();
+        callback(new Callback(Errors.TIME));
     }
 }

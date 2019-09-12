@@ -26,4 +26,6 @@ public interface OnReadListener {
      * @param version 当前固件版本号
      */
     void onFirmwareVersionCallback(boolean isValid, int version);
+
+    void onError(Throwable throwable);
 }

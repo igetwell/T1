@@ -28,9 +28,9 @@ public class Callback {
         this.smoothSmo2 = -1;
     }
 
-    public Callback(int code, Integer value, Integer smoothValue) {
+    public Callback(int code, Integer smo2, Integer smoothValue) {
         this.code = code;
-        this.smo2 = value;
+        this.smo2 = smo2;
         this.smoothSmo2 = smoothValue;
     }
 }

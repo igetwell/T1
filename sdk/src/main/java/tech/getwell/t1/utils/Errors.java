@@ -25,6 +25,10 @@ public class Errors {
      */
     public static final int VER = 3001;
     /**
+     * 响应超时
+     */
+    public static final int TIME = 4001;
+    /**
      * 其它异常
      */
     public static final int OTHER = 9001;
