@@ -93,13 +93,23 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
             callback(new Callback(Errors.BLE_BAD));
             return;
         }
-        findByVersion();
-        to2DataTimer = newTo2DataTimer();
-        to2DataTimer.start();
-
+        if(readTask == null){
+            callback(new Callback(Errors.BLE_BAD));
+            return;
+        }
+        if(!findByVersion()){
+            callback(new Callback(Errors.BLE_BAD));
+            return;
+        };
         // 启动读取数据
         readTask.setMode(getMode(mode));
         isRunning = send(getCommand(getMode(mode)));
+        if(!isRunning){
+            callback(new Callback(Errors.BLE_BAD));
+            return;
+        }
+        to2DataTimer = newTo2DataTimer();
+        to2DataTimer.start();
     }
 
     /**
@@ -118,8 +128,8 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
         }
     }
 
-    void findByVersion(){
-        send(getCommand(999));
+    boolean findByVersion(){
+        return send(getCommand(999));
     }
 
     int getMode(int mode){
@@ -182,8 +192,9 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
             bluetoothSocket.getOutputStream().flush();
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             //异常情况, 无法读写数据
+            LogUtils.d("当前连接不可用");
             callback(new Callback(Errors.BLE_BAD));
             return false;
         }
