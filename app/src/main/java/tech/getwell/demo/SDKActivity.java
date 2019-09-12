@@ -3,6 +3,7 @@ package tech.getwell.demo;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.util.Log;
 import android.view.View;
 import androidx.lifecycle.ViewModelProviders;
 import java.io.IOException;
@@ -51,7 +52,8 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
              return;
          }
          if(callback.code != 0){
-            return;
+             Log.e("Callback codes", "error codes : "+callback.code);
+             return;
          }
         model.getCallbackMutableLiveData().postValue(callback);
     }

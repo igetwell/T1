@@ -36,7 +36,7 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
     To2DataTimer to2DataTimer;
 
     public JDT1(){
-        LogUtils.setDebug(false);
+        //LogUtils.setDebug(false);
     }
 
     public void setListener(OnJDT1Listener listener) {
@@ -246,9 +246,12 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
 
     @Override
     public void onFirmwareVersionCallback(boolean isValid, int version) {
-        if(!isValid)closeTimer();
+        if(!isValid){
+            closeTimer();
+            callback(new Callback(Errors.VER));
+        }
         isRunning = isValid;
-        callback(new Callback(Errors.VER));
+
     }
 
     @Override
