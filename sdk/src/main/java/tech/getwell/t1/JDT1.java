@@ -1,6 +1,8 @@
 package tech.getwell.t1;
 
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
+
 import java.io.IOException;
 import tech.getwell.t1.beans.Callback;
 import tech.getwell.t1.beans.RawSmo2Data;
@@ -8,6 +10,7 @@ import tech.getwell.t1.beans.Response;
 import tech.getwell.t1.bles.ReadTask;
 import tech.getwell.t1.listeners.OnJDT1Listener;
 import tech.getwell.t1.listeners.OnReadListener;
+import tech.getwell.t1.logs.LogFile;
 import tech.getwell.t1.timrs.To2DataTimer;
 import tech.getwell.t1.timrs.To2TimeOutTask;
 import tech.getwell.t1.utils.Errors;
@@ -35,7 +38,12 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
 
     To2DataTimer to2DataTimer;
 
-    public JDT1(){
+    LogFile logFile;
+
+    Context context;
+
+    public JDT1(Context context){
+        this.context = context;
         LogUtils.setDebug(false);
     }
 
@@ -104,7 +112,13 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
         if(!findByVersion()){
             callback(new Callback(Errors.BLE_BAD));
             return;
-        };
+        }
+        // 创建日志
+        try{
+            logFile = new LogFile(context,"0101",2001);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
         // 启动读取数据
         readTask.setMode(getMode(mode));
         isRunning = send(getCommand(getMode(mode)));
@@ -123,9 +137,19 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
         isRunning = false;
         // 停止接受数据
         send(getCommand(-1));
+        if(logFile == null)return;
+        try{
+            logFile.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     public void close(){
+        if(isRunning){
+            stop();
+        }
+
         if(readTask != null){
             readTask.clear();
             readTask.stop();
@@ -204,6 +228,10 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
         }
     }
 
+    public LogFile getLogFile() {
+        return logFile;
+    }
+
     /**
      * 运动状态
      * @return
@@ -241,6 +269,11 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
     public void onSmo2Callback(RawSmo2Data rawSmo2Data) {
         closeTimer();
         isRunning = true;
+        try{
+            if(logFile != null)logFile.addRawData(rawSmo2Data);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
         callback(new Callback(Errors.NONE,rawSmo2Data.smo2,rawSmo2Data.smoothSmo2));
     }
 
