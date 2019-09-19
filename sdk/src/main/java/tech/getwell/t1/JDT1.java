@@ -9,6 +9,7 @@ import tech.getwell.t1.beans.RawSmo2Data;
 import tech.getwell.t1.beans.Response;
 import tech.getwell.t1.bles.ReadTask;
 import tech.getwell.t1.listeners.OnJDT1Listener;
+import tech.getwell.t1.listeners.OnJDT1RawDataListener;
 import tech.getwell.t1.listeners.OnReadListener;
 import tech.getwell.t1.logs.LogFile;
 import tech.getwell.t1.timrs.To2DataTimer;
@@ -34,21 +35,23 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
 
     OnJDT1Listener listener;
 
+    OnJDT1RawDataListener rawDataListener;
+
     ReadTask readTask;
 
     To2DataTimer to2DataTimer;
 
-    LogFile logFile;
-
-    Context context;
 
     public JDT1(Context context){
-        this.context = context;
         LogUtils.setDebug(false);
     }
 
     public void setListener(OnJDT1Listener listener) {
         this.listener = listener;
+    }
+
+    public void setRawDataListener(OnJDT1RawDataListener rawDataListener) {
+        this.rawDataListener = rawDataListener;
     }
 
     public void setTimeout(long interval) {
@@ -113,12 +116,6 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
             callback(new Callback(Errors.BLE_BAD));
             return;
         }
-        // 创建日志
-        try{
-            logFile = new LogFile(context,"0101",2001);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
         // 启动读取数据
         readTask.setMode(getMode(mode));
         isRunning = send(getCommand(getMode(mode)));
@@ -137,12 +134,6 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
         isRunning = false;
         // 停止接受数据
         send(getCommand(-1));
-        if(logFile == null)return;
-        try{
-            logFile.close();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
     }
 
     public void close(){
@@ -228,9 +219,6 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
         }
     }
 
-    public LogFile getLogFile() {
-        return logFile;
-    }
 
     /**
      * 运动状态
@@ -257,6 +245,12 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
     }
 
     /**
+     * 原始数据
+     * @param rawSmo2Data
+     */
+    void rawDataCallback(RawSmo2Data rawSmo2Data){if(rawDataListener != null)rawDataListener.onRawDataCallback(rawSmo2Data);}
+
+    /**
      * 设备响应所有数据
      * @param response
      */
@@ -269,11 +263,6 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
     public void onSmo2Callback(RawSmo2Data rawSmo2Data) {
         closeTimer();
         isRunning = true;
-        try{
-            if(logFile != null)logFile.addRawData(rawSmo2Data);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
         callback(new Callback(Errors.NONE,rawSmo2Data.smo2,rawSmo2Data.smoothSmo2));
     }
 

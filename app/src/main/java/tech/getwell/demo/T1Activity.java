@@ -61,11 +61,6 @@ public class T1Activity extends DataBindingActivity<ActivityT1Binding> implement
         status = 1;
         getViewDataBinding().setDevMsg("已连接");
         task.getVersion();
-        try{
-            logFile = new LogFile(this,"0101",2001);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
     }
 
     @Override

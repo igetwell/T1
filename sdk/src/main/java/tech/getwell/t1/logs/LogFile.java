@@ -29,8 +29,6 @@ public class LogFile {
     final String DATA_SUFFIX = ".txt";
 
     Context context;
-    // 用户ID
-    String userId = "10101";
     // 运动类型
     int exerciseNo;
 
@@ -40,17 +38,17 @@ public class LogFile {
     File originalFile;
     // 参数文件
     //File paramsFile;
+    String currentTimes;
 
     RandomAccessFile to2RandomFile;
 
     RandomAccessFile originalRandomFile;
 
 
-    public LogFile(Context context, String userId, int exerciseNo) throws IOException{
+    public LogFile(Context context, int exerciseNo) throws IOException{
         this.context = context;
-        this.userId = userId;
         this.exerciseNo = exerciseNo;
-        newFile();
+        //newFile();
     }
 
     String getCurrentTime(){
@@ -68,16 +66,16 @@ public class LogFile {
         return file;
     }
 
-    private void newFile() throws IOException {
-        String currentTimes = getCurrentTime();
+    public void newFile() throws IOException {
+        currentTimes = getCurrentTime();
         String rootName = new SimpleDateFormat("MM-dd HH时mm分ss秒").format(System.currentTimeMillis());
 
 
-        String fileName = rootName +"/"+this.userId+"_"+currentTimes+"_1hz_content.txt";
-        String originalName = rootName +"/"+this.userId+"_"+currentTimes+"_1hz_original.txt";
-        String paramsName = rootName +"/"+this.userId+"-"+currentTimes+"_"+exerciseNo+"_params.txt";
+        String fileName = rootName +"/smo2_"+currentTimes+".txt";
+        String originalName = rootName +"/original"+currentTimes+".txt";
+        //String paramsName = rootName +"/"+currentTimes+"_"+exerciseNo+"_params.txt";
 
-        String paramsPath = context.getCacheDir().getPath() +"/"+ DIR_NAME +"/"+paramsName;
+        //String paramsPath = context.getCacheDir().getPath() +"/"+ DIR_NAME +"/"+paramsName;
         String to2Path = context.getCacheDir().getPath() +"/"+ DIR_NAME +"/"+fileName;
         String originalPath = context.getCacheDir().getPath() +"/"+ DIR_NAME +"/"+originalName;
 
@@ -187,5 +185,18 @@ public class LogFile {
 
     void close(RandomAccessFile accessFile) throws IOException{
         if(accessFile != null)accessFile.close();
+    }
+
+    File rename(File file,String newPathName){
+        File newFile = new File(newPathName);
+        boolean isSuccess = file.renameTo(newFile);
+        if(isSuccess){
+            file.delete();
+        }
+        return newFile;
+    }
+
+    public String getCurrentTimes() {
+        return currentTimes;
     }
 }
