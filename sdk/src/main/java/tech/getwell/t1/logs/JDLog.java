@@ -17,7 +17,7 @@ import tech.getwell.t1.beans.Smo2DataLog;
  * @author Wave
  * @date 2019/8/12
  */
-public class LogFile {
+public class JDLog {
 
     public static final String DIR_NAME = "trainings";
     final String TABLE_FLAG = "\t";
@@ -29,8 +29,6 @@ public class LogFile {
     final String DATA_SUFFIX = ".txt";
 
     Context context;
-    // 运动类型
-    int exerciseNo;
 
     // 数据文件
     File to2File;
@@ -45,10 +43,8 @@ public class LogFile {
     RandomAccessFile originalRandomFile;
 
 
-    public LogFile(Context context, int exerciseNo) throws IOException{
+    public JDLog(Context context) throws IOException{
         this.context = context;
-        this.exerciseNo = exerciseNo;
-        //newFile();
     }
 
     String getCurrentTime(){

@@ -20,7 +20,7 @@ import io.reactivex.schedulers.Schedulers;
 import tech.getwell.demo.adapters.LogAdapter;
 import tech.getwell.demo.databinding.ActivityLogBinding;
 import tech.getwell.demo.listeners.OnItemLogListener;
-import tech.getwell.t1.logs.LogFile;
+import tech.getwell.t1.logs.JDLog;
 import tech.getwell.demo.viewmodels.LogViewModel;
 
 /**
@@ -56,11 +56,11 @@ public class LogActivity extends DataBindingActivity<ActivityLogBinding> impleme
         viewModel = ViewModelProviders.of(this).get(LogViewModel.class);
         viewModel.getMutableLiveData().observe(this,(files)-> onLogFilesChanged(files));
 
-        observableFileLogs(getCacheDir().getAbsolutePath() +"/"+ LogFile.DIR_NAME);
+        observableFileLogs(getCacheDir().getAbsolutePath() +"/"+ JDLog.DIR_NAME);
     }
 
     String getRootFilePath(){
-        return getCacheDir().getAbsolutePath() +"/"+ LogFile.DIR_NAME;
+        return getCacheDir().getAbsolutePath() +"/"+ JDLog.DIR_NAME;
     }
 
     boolean isRootFilePath(){
@@ -85,7 +85,7 @@ public class LogActivity extends DataBindingActivity<ActivityLogBinding> impleme
     }
 
     File[] findLogFiles(String filePath){
-        //String filePath = getCacheDir().getPath() +"/"+ LogFile.DIR_NAME;
+        //String filePath = getCacheDir().getPath() +"/"+ JDLog.DIR_NAME;
         return new File(filePath).listFiles();
     }
 

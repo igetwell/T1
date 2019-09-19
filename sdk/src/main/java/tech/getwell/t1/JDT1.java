@@ -1,7 +1,6 @@
 package tech.getwell.t1;
 
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
 
 import java.io.IOException;
 import tech.getwell.t1.beans.Callback;
@@ -11,7 +10,6 @@ import tech.getwell.t1.bles.ReadTask;
 import tech.getwell.t1.listeners.OnJDT1Listener;
 import tech.getwell.t1.listeners.OnJDT1RawDataListener;
 import tech.getwell.t1.listeners.OnReadListener;
-import tech.getwell.t1.logs.LogFile;
 import tech.getwell.t1.timrs.To2DataTimer;
 import tech.getwell.t1.timrs.To2TimeOutTask;
 import tech.getwell.t1.utils.Errors;
@@ -42,7 +40,7 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
     To2DataTimer to2DataTimer;
 
 
-    public JDT1(Context context){
+    public JDT1(){
         LogUtils.setDebug(false);
     }
 

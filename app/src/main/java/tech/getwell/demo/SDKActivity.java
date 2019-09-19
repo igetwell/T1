@@ -12,7 +12,10 @@ import tech.getwell.demo.beans.BleDevice;
 import tech.getwell.t1.JDT1;
 import tech.getwell.t1.beans.Callback;
 import tech.getwell.demo.databinding.ActivitySdk2Binding;
+import tech.getwell.t1.beans.RawSmo2Data;
 import tech.getwell.t1.listeners.OnJDT1Listener;
+import tech.getwell.t1.listeners.OnJDT1RawDataListener;
+import tech.getwell.t1.logs.JDLog;
 import tech.getwell.t1.utils.LogUtils;
 import tech.getwell.demo.viewmodels.SDKViewModel;
 
@@ -20,7 +23,7 @@ import tech.getwell.demo.viewmodels.SDKViewModel;
  * @author Wave
  * @date 2019/7/30
  */
-public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implements OnJDT1Listener {
+public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implements OnJDT1Listener, OnJDT1RawDataListener {
 
     public static final String EXTRA_T1 = "extra_t1_info";
 
@@ -28,6 +31,7 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
 
     JDT1 jdt1;
 
+    JDLog jdLog;
     @Override
     protected int layoutId() {
         return R.layout.activity_sdk_2;
@@ -40,6 +44,11 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
         model.getCallbackMutableLiveData().observe(this,(callback)-> onT1DataChanged(callback));
         BleDevice device = getIntent().getParcelableExtra(EXTRA_T1);
         onInitBle(BluetoothAdapter.getDefaultAdapter().getRemoteDevice(device.address));
+        try{
+            jdLog.newFile();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     void onT1DataChanged(Callback callback){
@@ -58,6 +67,15 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
         model.getCallbackMutableLiveData().postValue(callback);
     }
 
+    @Override
+    public void onRawDataCallback(RawSmo2Data rawSmo2Data) {
+        try{
+            jdLog.addRawData(rawSmo2Data);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
     void onInitBle(BluetoothDevice device){
         try{
             UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -66,16 +84,15 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
             bluetoothSocket.connect();
             LogUtils.d("连接成功...");
             // 读取数据
-            jdt1 = new JDT1(this.getApplication());
+            jdt1 = new JDT1();
             jdt1.setBluetoothSocket(bluetoothSocket);
             jdt1.setListener(this);
+            jdt1.setRawDataListener(this);
 
         }catch (IOException e){
             e.printStackTrace();
         }
-
         //jdt1.start(); // jdt1.stop();
-
     }
 
     public void onStartRunningClick(View view){
@@ -84,6 +101,11 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
 
     public void onStopClick(View view){
         if(jdt1 != null)jdt1.stop();
+        try{
+            jdLog.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     @Override

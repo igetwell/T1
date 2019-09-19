@@ -12,7 +12,7 @@ import tech.getwell.t1.beans.Smo2Data;
 import tech.getwell.demo.bles.T1ConnectTask;
 import tech.getwell.demo.bles.listeners.OnT1ConnectListener;
 import tech.getwell.demo.databinding.ActivityT1Binding;
-import tech.getwell.t1.logs.LogFile;
+import tech.getwell.t1.logs.JDLog;
 import tech.getwell.t1.utils.LogUtils;
 import tech.getwell.demo.viewmodels.T1DataViewModel;
 
@@ -30,7 +30,7 @@ public class T1Activity extends DataBindingActivity<ActivityT1Binding> implement
 
     int status = 0;
 
-    LogFile logFile;
+    JDLog JDLog;
 
     @Override
     protected int layoutId() {
@@ -86,7 +86,7 @@ public class T1Activity extends DataBindingActivity<ActivityT1Binding> implement
         LogUtils.d("onSmo2Callback =  "+rawSmo2Data.toDataString());
         // 写入文件中..
         try{
-            if(logFile != null) logFile.addRawData(rawSmo2Data);
+            if(JDLog != null) JDLog.addRawData(rawSmo2Data);
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -153,9 +153,9 @@ public class T1Activity extends DataBindingActivity<ActivityT1Binding> implement
             task.stopData();
             task.disconnect();
         }
-        if(logFile != null){
+        if(JDLog != null){
             try{
-                logFile.close();
+                JDLog.close();
             }catch (IOException e){
                 e.printStackTrace();
             }
