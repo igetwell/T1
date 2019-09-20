@@ -68,7 +68,7 @@ public class JDLog {
 
 
         String fileName = rootName +"/smo2_"+currentTimes+".txt";
-        String originalName = rootName +"/original"+currentTimes+".txt";
+        String originalName = rootName +"/original_"+currentTimes+".txt";
         //String paramsName = rootName +"/"+currentTimes+"_"+exerciseNo+"_params.txt";
 
         //String paramsPath = context.getCacheDir().getPath() +"/"+ DIR_NAME +"/"+paramsName;
