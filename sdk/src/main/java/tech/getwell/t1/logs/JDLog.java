@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.TimeZone;
 import tech.getwell.t1.beans.RawDataLog;
 import tech.getwell.t1.beans.RawSmo2Data;
-import tech.getwell.t1.beans.Smo2DataLog;
+import tech.getwell.t1.beans.RunningLog;
 
 /**
  * @author Wave
@@ -95,11 +95,11 @@ public class JDLog {
         return strDate;
     }
 
-    StringBuilder getOriginalData(RawDataLog rawDataLog){
-        return getOriginalData(rawDataLog.frame,rawDataLog.ratio,rawDataLog.datas,rawDataLog.temp1,rawDataLog.temp2);
+    StringBuilder toOriginalData(RawDataLog rawDataLog){
+        return toOriginalData(rawDataLog.frame,rawDataLog.ratio,rawDataLog.datas,rawDataLog.temp1,rawDataLog.temp2);
     }
 
-    StringBuilder getOriginalData(int frame, double ratio, int[] datas, int temp1, int temp2){
+    StringBuilder toOriginalData(int frame, double ratio, int[] datas, int temp1, int temp2){
         StringBuilder originalSb = new StringBuilder();
         originalSb.setLength(0);
         originalSb.append(getCurrentTimeByTime());
@@ -123,11 +123,11 @@ public class JDLog {
 
     int to2Count = 1;
 
-    StringBuilder getTo2Data(Smo2DataLog smo2DataLog){
-        return getTo2Data(smo2DataLog.smo2_filter,smo2DataLog.hr,smo2DataLog.conduction,smo2DataLog.temp1,smo2DataLog.temp2,smo2DataLog.latitude,smo2DataLog.longitude,smo2DataLog.speed);
+    StringBuilder toRunningData(RunningLog runningLog){
+        return toRunningData(runningLog.smo2_filter, runningLog.hr, runningLog.conduction, runningLog.temp1, runningLog.temp2, runningLog.latitude, runningLog.longitude, runningLog.speed);
     }
 
-    StringBuilder getTo2Data(int smo2_filter, int hr, double conduction, int temp1, int temp2, double latitude, double longitude, double speed){
+    StringBuilder toRunningData(int smo2_filter, int hr, double conduction, int temp1, int temp2, double latitude, double longitude, double speed){
         StringBuilder sportSb = new StringBuilder();
         sportSb.setLength(0);
         sportSb.append(String.valueOf(to2Count++));
@@ -154,9 +154,16 @@ public class JDLog {
     /**
      * 添加记录内容
      */
-    public void addRawData(RawSmo2Data rawSmo2Data) throws IOException{
-        writeDataLine(originalRandomFile,getOriginalData(rawSmo2Data.toRawDataLog()).toString());
-        writeDataLine(to2RandomFile,getTo2Data(rawSmo2Data.toSmo2DataLog()).toString());
+    public void addRawDataLog(RawSmo2Data rawSmo2Data) throws IOException{
+        writeDataLine(originalRandomFile, toOriginalData(rawSmo2Data.toRawDataLog()).toString());
+
+    }
+
+    /**
+     * 添加记录内容
+     */
+    public void addRunningLog(RunningLog runningLog) throws IOException{
+        writeDataLine(to2RandomFile, toRunningData(runningLog).toString());
     }
 
     /**

@@ -45,6 +45,7 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
         BleDevice device = getIntent().getParcelableExtra(EXTRA_T1);
         onInitBle(BluetoothAdapter.getDefaultAdapter().getRemoteDevice(device.address));
         try{
+            jdLog = new JDLog(this.getApplication());
             jdLog.newFile();
         }catch (IOException e){
             e.printStackTrace();
@@ -70,7 +71,7 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
     @Override
     public void onRawDataCallback(RawSmo2Data rawSmo2Data) {
         try{
-            jdLog.addRawData(rawSmo2Data);
+            jdLog.addRawDataLog(rawSmo2Data);
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -86,9 +87,8 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
             // 读取数据
             jdt1 = new JDT1();
             jdt1.setBluetoothSocket(bluetoothSocket);
-            jdt1.setListener(this);
             jdt1.setRawDataListener(this);
-
+            jdt1.setListener(this);
         }catch (IOException e){
             e.printStackTrace();
         }

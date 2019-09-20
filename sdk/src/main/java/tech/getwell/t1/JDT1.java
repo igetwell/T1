@@ -261,6 +261,7 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
     public void onSmo2Callback(RawSmo2Data rawSmo2Data) {
         closeTimer();
         isRunning = true;
+        rawDataCallback(rawSmo2Data);
         callback(new Callback(Errors.NONE,rawSmo2Data.smo2,rawSmo2Data.smoothSmo2));
     }
 

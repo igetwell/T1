@@ -84,7 +84,7 @@ public class Smo2Data extends Smo2HexData{
         return oldValue == null ? -1 : Integer.parseInt(oldValue,16);
     }
 
-    public Smo2DataLog toSmo2DataLog(){
-        return new Smo2DataLog(this);
+    public RunningLog toSmo2DataLog(){
+        return new RunningLog(this);
     }
 }

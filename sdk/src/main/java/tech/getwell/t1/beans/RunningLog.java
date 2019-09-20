@@ -4,7 +4,7 @@ package tech.getwell.t1.beans;
  * @author Wave
  * @date 2019/8/13
  */
-public class Smo2DataLog {
+public class RunningLog {
     //int smo2_filter,int hr, double conduction, int temp1, int temp2,double latitude, double longitude, double speed
     public int smo2_filter;
 
@@ -22,10 +22,10 @@ public class Smo2DataLog {
 
     public double speed;
 
-    public Smo2DataLog() {
+    public RunningLog() {
     }
 
-    public Smo2DataLog(Smo2Data smo2Data) {
+    public RunningLog(Smo2Data smo2Data) {
         this.smo2_filter = smo2Data.smo2;
         this.hr = -1;
         this.conduction = -1;
