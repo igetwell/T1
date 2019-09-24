@@ -31,9 +31,9 @@ public class JDLog {
     Context context;
 
     // 数据文件
-    File to2File;
+    private File to2File;
     // 原始数据文件
-    File originalFile;
+    private File originalFile;
     // 参数文件
     //File paramsFile;
     String currentTimes;
@@ -190,16 +190,11 @@ public class JDLog {
         if(accessFile != null)accessFile.close();
     }
 
-    File rename(File file,String newPathName){
-        File newFile = new File(newPathName);
-        boolean isSuccess = file.renameTo(newFile);
-        if(isSuccess){
-            file.delete();
-        }
-        return newFile;
+    public File getOriginalFile() {
+        return originalFile;
     }
 
-    public String getCurrentTimes() {
-        return currentTimes;
+    public File getTo2File() {
+        return to2File;
     }
 }
