@@ -70,18 +70,20 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
 
     @Override
     public void onRawDataCallback(RawSmo2Data rawSmo2Data) {
-        try{
-            jdLog.addRawDataLog(rawSmo2Data);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+//        try{
+//            jdLog.addRawDataLog(rawSmo2Data);
+//        }catch (IOException e){
+//            e.printStackTrace();
+//        }
     }
+
+    BluetoothSocket bluetoothSocket;
 
     void onInitBle(BluetoothDevice device){
         try{
             UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
             // 建立蓝牙
-            BluetoothSocket bluetoothSocket = device.createInsecureRfcommSocketToServiceRecord(uuid);
+            bluetoothSocket = device.createInsecureRfcommSocketToServiceRecord(uuid);
             bluetoothSocket.connect();
             LogUtils.d("连接成功...");
             // 读取数据
@@ -110,6 +112,12 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
 
     @Override
     protected void onDestroy() {
+        if(jdt1 != null)jdt1.close();
+        try{
+            if(bluetoothSocket != null)bluetoothSocket.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
         super.onDestroy();
     }
 

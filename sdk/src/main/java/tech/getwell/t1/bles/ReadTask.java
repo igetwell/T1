@@ -58,15 +58,15 @@ public class ReadTask extends Thread {
                 Thread.sleep(10);
             } catch (Exception e) {
                 //e.printStackTrace();
-                if(listener != null)listener.onError(e);
+                if(listener != null && isRunning)listener.onError(e);
                 return;
             }
         }
     }
 
     public void clear() {
-        isRunning = false;
         LogUtils.d("停止读取设备响应数据");
+        isRunning = false;
     }
 
     int getSmoothValue(int smo2) {

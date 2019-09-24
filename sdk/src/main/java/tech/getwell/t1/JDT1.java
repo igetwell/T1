@@ -41,7 +41,7 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
 
 
     public JDT1(){
-        LogUtils.setDebug(false);
+        LogUtils.setDebug(true);
     }
 
     public void setListener(OnJDT1Listener listener) {
@@ -141,7 +141,6 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
 
         if(readTask != null){
             readTask.clear();
-            readTask.stop();
         }
     }
 

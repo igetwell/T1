@@ -85,11 +85,11 @@ public class T1Activity extends DataBindingActivity<ActivityT1Binding> implement
         //RawSmo2Data rawSmo2Data = new RawSmo2Data(rawByteData);
         LogUtils.d("onSmo2Callback =  "+rawSmo2Data.toDataString());
         // 写入文件中..
-        try{
-            if(JDLog != null) JDLog.addRawData(rawSmo2Data);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+//        try{
+//            if(JDLog != null) JDLog.addRunningLog(rawSmo2Data);
+//        }catch (IOException e){
+//            e.printStackTrace();
+//        }
         // 非UI线程, 需要使用 postValue
         model.getSmo2DataMutableLiveData().postValue(rawSmo2Data);
         //model.getSmo2DataMutableLiveData().postValue(new Smo2Data(rawByteData));
