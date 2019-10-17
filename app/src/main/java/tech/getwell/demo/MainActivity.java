@@ -126,10 +126,10 @@ public class MainActivity extends DataBindingActivity<ActivityMainBinding> imple
             LogUtils.d("已存在相同的设备信息");
             return;
         }
-        if(device.getName() == null || !device.getName().startsWith("GW_")){
-            LogUtils.d("非T1设备信息");
-            return;
-        }
+//        if(device.getName() == null || !device.getName().startsWith("GW_") ){
+//            LogUtils.d("非T1设备信息");
+//            return;
+//        }
         devLogs.put(device.getAddress(),device);
         t1Adapter.addArray(new BleDevice(device));
         t1Adapter.notifyDataSetChanged();

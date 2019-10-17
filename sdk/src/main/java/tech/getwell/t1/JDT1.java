@@ -38,9 +38,22 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
     ReadTask readTask;
 
     To2DataTimer to2DataTimer;
-
+    /**
+     * 初始化时. 是否接受设备数据
+     */
+    boolean isStopData;
 
     public JDT1(){
+        isStopData = true;
+        LogUtils.setDebug(true);
+    }
+
+    /**
+     *
+     * @param isStopData 是否停止接受数据
+     */
+    public JDT1(boolean isStopData){
+        this.isStopData = isStopData;
         LogUtils.setDebug(true);
     }
 
@@ -74,9 +87,8 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
         readTask.start();
 
         // 发送停止接受数据命令
-        send(getCommand(-1));
+        if(isStopData)send(getCommand(-1));
     }
-
 
     To2DataTimer newTo2DataTimer(){
         closeTimer();
@@ -84,9 +96,8 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
     }
 
     void closeTimer(){
-        if(to2DataTimer != null){
-            to2DataTimer.close();
-        }
+        if(to2DataTimer == null)return;
+        to2DataTimer.close();
         to2DataTimer = null;
     }
 

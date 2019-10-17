@@ -87,10 +87,11 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
             bluetoothSocket.connect();
             LogUtils.d("连接成功...");
             // 读取数据
-            jdt1 = new JDT1();
+            jdt1 = new JDT1(true);
             jdt1.setBluetoothSocket(bluetoothSocket);
             jdt1.setRawDataListener(this);
             jdt1.setListener(this);
+            jdt1.start();
         }catch (IOException e){
             e.printStackTrace();
         }
