@@ -66,6 +66,7 @@ Callback.class
 变量 | 描述
 ---|---
 code | 响应码
+version | 原始肌氧值 
 smo2 | 原始肌氧值 
 smoothSmo2 | 平滑肌氧值
 
