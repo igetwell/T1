@@ -12,6 +12,7 @@ import tech.getwell.t1.listeners.OnJDT1RawDataListener;
 import tech.getwell.t1.listeners.OnReadListener;
 import tech.getwell.t1.timrs.To2DataTimer;
 import tech.getwell.t1.timrs.To2TimeOutTask;
+import tech.getwell.t1.utils.CommandManagement;
 import tech.getwell.t1.utils.Errors;
 import tech.getwell.t1.utils.LogUtils;
 
@@ -19,17 +20,15 @@ import tech.getwell.t1.utils.LogUtils;
  * @author Wave
  * @date 2019/9/6
  */
-public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListener {
-
-    public final static int RUNNING = 0;
-
-    public final static int RESISTANCE = 1;
+public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListener, CommandManagement.OnCommandManagementListener {
 
     boolean isRunning;
 
     long timeout = 3000L;
 
     BluetoothSocket bluetoothSocket;
+
+    CommandManagement commandManagement;
 
     OnJDT1Listener listener;
 
@@ -38,23 +37,15 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
     ReadTask readTask;
 
     To2DataTimer to2DataTimer;
-    /**
-     * 初始化时. 是否接受设备数据
-     */
-    boolean isStopData;
+
+    int version = -1;
+
+    boolean isVersionValid;
 
     public JDT1(){
-        isStopData = true;
         LogUtils.setDebug(true);
-    }
-
-    /**
-     *
-     * @param isStopData 是否停止接受数据
-     */
-    public JDT1(boolean isStopData){
-        this.isStopData = isStopData;
-        LogUtils.setDebug(true);
+        commandManagement = new CommandManagement();
+        commandManagement.setListener(this);
     }
 
     public void setListener(OnJDT1Listener listener) {
@@ -85,9 +76,10 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
         readTask = new ReadTask(this.bluetoothSocket.getInputStream()) ;
         readTask.setListener(this);
         readTask.start();
-
+        // 获取固件版本
+        commandManagement.pull(CommandManagement.VERSION);
         // 发送停止接受数据命令
-        if(isStopData)send(getCommand(-1));
+        //if(isStopData)commandManagement.pull(CommandManagement.STOP);
     }
 
     To2DataTimer newTo2DataTimer(){
@@ -105,7 +97,7 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
      * 开始运动
      */
     public void start(){
-        start(RUNNING);
+        start(CommandManagement.START_RUNNING_DEBUG);
     }
 
     /**
@@ -114,24 +106,18 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
      */
     public void start(int mode){
         if(!isConnected()){
-            callback(new Callback(Errors.BLE_BAD));
+            LogUtils.d("start isConnected is error ");
+            callback(new Callback(Errors.BLE_BAD,this.version));
             return;
         }
         if(readTask == null){
-            callback(new Callback(Errors.BLE_BAD));
+            callback(new Callback(Errors.BLE_BAD,this.version));
             return;
         }
-        if(!findByVersion()){
-            callback(new Callback(Errors.BLE_BAD));
-            return;
-        }
+        int command = getMode(mode);
         // 启动读取数据
-        readTask.setMode(getMode(mode));
-        isRunning = send(getCommand(getMode(mode)));
-        if(!isRunning){
-            callback(new Callback(Errors.BLE_BAD));
-            return;
-        }
+        readTask.setMode(command);
+        commandManagement.pull(command);
         to2DataTimer = newTo2DataTimer();
         to2DataTimer.start();
     }
@@ -142,74 +128,45 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
     public void stop(){
         isRunning = false;
         // 停止接受数据
-        send(getCommand(-1));
+        commandManagement.pull(CommandManagement.STOP);
+        //send(getCommand(-1));
     }
 
     public void close(){
         if(isRunning){
             stop();
         }
-
+        commandManagement.close();
         if(readTask != null){
             readTask.clear();
         }
     }
 
-    boolean findByVersion(){
-        return send(getCommand(999));
-    }
-
     int getMode(int mode){
-        return mode == RUNNING ? 10 : 11;
-    }
-    /**
-     * 获取设备指令
-     * @param command
-     * @return
-     */
-    byte[] getCommand(int command){
-        byte[] bytes = null;
-        switch (command){
-            // 停止接收数据
-            case -1:
-                bytes = new byte[]{0x73,(byte) 0xA0,0x01,(byte) 0xF0};
-                break;
-            // 初始化数据 跑步类型
-            case 1:
-                bytes = new byte[]{0x73,(byte) 0xA0,0x01,0x01};
-                break;
-            // 初始化数据 非跑步类型
-            case 2:
-                bytes = new byte[]{0x73,(byte) 0xA0,0x01,0x02};
-                break;
-            // 初始化数据 跑步类型 (调试模式,带原始数据)
-            case 10:
-                bytes = new byte[]{0x73,(byte) 0xA0,0x01,0x10};
-                break;
-            // 初始化数据 非跑步类型 (调试模式,带原始数据)
-            case 11:
-                bytes = new byte[]{0x73,(byte) 0xA0,0x01,0x11};
-                break;
-            // 获取设备版本
-            case 999:
-                bytes = new byte[]{0x73,0x6a,0x00,0x02};
-                break;
-        }
-        return bytes;
+        return mode == CommandManagement.START_RUNNING ? 10 : 11;
     }
 
+    /**
+     * 返回可执行的指令
+     * @param command
+     */
+    @Override
+    public void onCommandCallback(byte[] command) {
+        send(command);
+    }
     /**
      * 发送数据
      * @param bs
      */
     boolean send(byte[] bs){
         if(!isConnected()){
-            callback(new Callback(Errors.BLE_BAD));
+            LogUtils.d("isConnected is error ");
+            callback(new Callback(Errors.BLE_BAD,this.version));
             return false;
         }
         if(bs == null){
             LogUtils.e(" 未知的指令");
-            callback(new Callback(Errors.OTHER));
+            callback(new Callback(Errors.OTHER,this.version));
             return false;
         }
 
@@ -222,7 +179,7 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
             //e.printStackTrace();
             //异常情况, 无法读写数据
             LogUtils.d("当前连接不可用");
-            callback(new Callback(Errors.BLE_BAD));
+            callback(new Callback(Errors.BLE_BAD,this.version));
             return false;
         }
     }
@@ -272,17 +229,20 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
         closeTimer();
         isRunning = true;
         rawDataCallback(rawSmo2Data);
-        callback(new Callback(Errors.NONE,rawSmo2Data.smo2,rawSmo2Data.smoothSmo2));
+        callback(new Callback(Errors.NONE,this.version,rawSmo2Data.smo2,rawSmo2Data.smoothSmo2));
     }
 
     @Override
     public void onFirmwareVersionCallback(boolean isValid, int version) {
+        this.isVersionValid = isValid;
+        int code = Errors.NONE;
+        this.version = version;
         if(!isValid){
             closeTimer();
-            callback(new Callback(Errors.VER));
+            code = Errors.VER;
         }
         isRunning = isValid;
-
+        callback(new Callback(code,this.version));
     }
 
     @Override
@@ -290,7 +250,7 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
         LogUtils.d("蓝牙连接已断开...");
         isRunning = false;
         closeTimer();
-        callback(new Callback(Errors.BLE_BAD));
+        callback(new Callback(Errors.BLE_BAD,this.version));
     }
 
     @Override
@@ -298,6 +258,6 @@ public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListene
         LogUtils.d("响应超时了...");
         isRunning = false;
         closeTimer();
-        callback(new Callback(Errors.TIME));
+        callback(new Callback(Errors.TIME,this.version));
     }
 }

@@ -34,6 +34,10 @@ public class Response {
      * 结束肌氧数据类型
      */
     public static final int SOM2_STOP = 4;
+    /**
+     * 最低版本号
+     */
+    public static final int MIN_VERSION = 228;
 
     /**
      * 消息类型
@@ -111,11 +115,11 @@ public class Response {
     }
 
     /**
-     * 是否支持当前的固件版本
+     * 是否支持当前的固件版本 (30323238)
      * @return
      */
     public boolean isFirmwareValid(){
-        return getFirmwareVersion() >= 30323238;
+        return getFirmwareVersion() >= MIN_VERSION;
     }
 
     /**
@@ -123,7 +127,11 @@ public class Response {
      * @return
      */
     public int getFirmwareVersion(){
-        return Integer.parseInt(data.toString().substring(8,16));
+        String n1 = String.valueOf(Integer.parseInt(data.toString().substring(8,10)) - 30);
+        String n2 = String.valueOf(Integer.parseInt(data.toString().substring(10,12)) - 30);
+        String n3 = String.valueOf(Integer.parseInt(data.toString().substring(12,14)) - 30);
+        String n4 = String.valueOf(Integer.parseInt(data.toString().substring(14,16)) - 30);
+        return Integer.parseInt(n1+n2+n3+n4);
     }
 
     public RawByteData toRawByteData(){
