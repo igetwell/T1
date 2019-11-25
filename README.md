@@ -46,7 +46,7 @@ Usage
     //jdt1ParserClient.startMotion(Motion.RUNNING_DEBUG);; 
     //jdt1ParserClient.stopMotion();
     // 更新固件
-    jdt1ParserClient.refreshFirmware(...);
+    //jdt1ParserClient.refreshFirmware(...);
     // 结束通讯交互
     //jdt1ParserClient.close();
 ```
