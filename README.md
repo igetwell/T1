@@ -21,7 +21,7 @@ allprojects {
 
 dependencies {
     ...
-    implementation 'com.github.getwell:T1:2.0.0'
+    implementation 'com.github.igetwell:T1:2.0.0'
 }
 ```
 Usage
