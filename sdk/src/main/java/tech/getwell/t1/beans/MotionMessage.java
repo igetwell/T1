@@ -6,11 +6,15 @@ import tech.getwell.t1.utils.LogUtils;
  * @author Wave
  * @date 2019/8/12
  */
-public class RawSmo2Data extends Smo2Data{
+public class MotionMessage extends Smo2Data{
 
     public int[] datas;
 
-    public RawSmo2Data(RawByteData byteData) {
+    public MotionMessage(){
+
+    }
+
+    public MotionMessage(RawByteData byteData) {
         super(byteData);
         if(byteData.others == null){
             LogUtils.e("byteData others == null ");

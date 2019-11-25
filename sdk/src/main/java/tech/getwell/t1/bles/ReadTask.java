@@ -4,8 +4,10 @@ import android.util.Log;
 
 import java.io.InputStream;
 
-import tech.getwell.t1.beans.RawSmo2Data;
+import tech.getwell.t1.beans.FirmwareVersionMessage;
+import tech.getwell.t1.beans.MotionMessage;
 import tech.getwell.t1.beans.Response;
+import tech.getwell.t1.utils.Motion;
 import tech.getwell.t1.utils.SmoothSom2;
 import tech.getwell.t1.listeners.OnReadListener;
 import tech.getwell.t1.utils.LogUtils;
@@ -38,6 +40,21 @@ public class ReadTask extends Thread {
         smoothSom2.setMax(getMax(mode));
     }
 
+    public void setMotion(Motion motion){
+        smoothSom2.setMax(getMotionMaxCount(motion));
+    }
+
+    int getMotionMaxCount(Motion motion){
+        int count = 3;
+        switch (motion){
+            case RUNNING:
+            case RUNNING_DEBUG:
+                count = 5;
+                break;
+        }
+        return count;
+    }
+
     int getMax(int mode) {
         return mode == 1 || mode == 10 ? 5 : 3;
     }
@@ -53,7 +70,8 @@ public class ReadTask extends Thread {
                 return;
             }
             try {
-                callback(new Response(this.stream));
+                Response response = new Response(this.stream);
+                callback(response);
                 // 不能全部占用CPU，要稍微释放
                 Thread.sleep(10);
             } catch (Exception e) {
@@ -81,17 +99,19 @@ public class ReadTask extends Thread {
      */
     void callback(Response response) {
         if (listener == null || response == null) return;
-        listener.onCallback(response);
 
+        listener.onCallback(response);
         switch (response.type) {
+            case Response.UPDATE_FIRMWARE:
+                //listener.onUpdateFirmwareCallback(response.getBuffer(),response.getNum());
+                break;
             case Response.FIRMWARE_VERSION:
-                //String version = response.
-                listener.onFirmwareVersionCallback(response.isFirmwareValid(), response.getFirmwareVersion());
+                listener.onFirmwareVersionCallback(new FirmwareVersionMessage(response.isFirmwareValid(), response.getFirmwareVersion()));
                 break;
             case Response.SMO2:
-                RawSmo2Data rawSmo2Data = new RawSmo2Data(response.toRawByteData());
-                rawSmo2Data.smoothSmo2 = getSmoothValue(rawSmo2Data.smo2);
-                listener.onSmo2Callback(rawSmo2Data);
+                MotionMessage motionMessage = new MotionMessage(response.toRawByteData());
+                motionMessage.smoothSmo2 = getSmoothValue(motionMessage.smo2);
+                listener.onSmo2Callback(motionMessage);
                 break;
         }
     }

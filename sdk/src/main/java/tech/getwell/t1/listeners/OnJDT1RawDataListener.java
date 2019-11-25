@@ -1,6 +1,6 @@
 package tech.getwell.t1.listeners;
 
-import tech.getwell.t1.beans.RawSmo2Data;
+import tech.getwell.t1.beans.MotionMessage;
 
 /**
  * @author Wave
@@ -8,5 +8,5 @@ import tech.getwell.t1.beans.RawSmo2Data;
  */
 public interface OnJDT1RawDataListener {
 
-    void onRawDataCallback(RawSmo2Data rawSmo2Data);
+    void onRawDataCallback(MotionMessage motionMessage);
 }

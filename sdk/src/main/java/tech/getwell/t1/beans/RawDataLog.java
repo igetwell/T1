@@ -19,10 +19,10 @@ public class RawDataLog {
     public RawDataLog() {
     }
 
-    public RawDataLog(RawSmo2Data rawSmo2Data) {
-        this.frame = rawSmo2Data.seq;
+    public RawDataLog(MotionMessage motionMessage) {
+        this.frame = motionMessage.seq;
         this.ratio = -1;
-        this.datas = rawSmo2Data.datas;
+        this.datas = motionMessage.datas;
         this.temp1 = -1;
         this.temp2 = -1;
     }

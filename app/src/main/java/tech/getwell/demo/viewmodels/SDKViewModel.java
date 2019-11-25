@@ -3,6 +3,9 @@ package tech.getwell.demo.viewmodels;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import tech.getwell.t1.beans.Callback;
+import tech.getwell.t1.beans.FirmwareVersionMessage;
+import tech.getwell.t1.beans.MotionMessage;
+import tech.getwell.t1.beans.UpdateFirmwareMessage;
 
 /**
  * @author Wave
@@ -10,12 +13,30 @@ import tech.getwell.t1.beans.Callback;
  */
 public class SDKViewModel extends ViewModel {
 
-    MutableLiveData<Callback> callbackMutableLiveData;
+    MutableLiveData<MotionMessage> motionMessageMutableLiveData;
 
-    public MutableLiveData<Callback> getCallbackMutableLiveData() {
-        if(callbackMutableLiveData == null){
-            callbackMutableLiveData = new MutableLiveData<>();
+    MutableLiveData<FirmwareVersionMessage> firmwareVersionMutableLiveData;
+
+    MutableLiveData<UpdateFirmwareMessage> updateFirmwareMessageMutableLiveData;
+
+    public MutableLiveData<MotionMessage> getMotionMessageMutableLiveData() {
+        if(motionMessageMutableLiveData == null){
+            motionMessageMutableLiveData = new MutableLiveData<>();
         }
-        return callbackMutableLiveData;
+        return motionMessageMutableLiveData;
+    }
+
+    public MutableLiveData<FirmwareVersionMessage> getFirmwareVersionMutableLiveData() {
+        if(firmwareVersionMutableLiveData == null){
+            firmwareVersionMutableLiveData = new MutableLiveData<>();
+        }
+        return firmwareVersionMutableLiveData;
+    }
+
+    public MutableLiveData<UpdateFirmwareMessage> getUpdateFirmwareMessageMutableLiveData() {
+        if(updateFirmwareMessageMutableLiveData == null){
+            updateFirmwareMessageMutableLiveData = new MutableLiveData<>();
+        }
+        return updateFirmwareMessageMutableLiveData;
     }
 }

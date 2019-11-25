@@ -166,6 +166,7 @@ public class MainActivity extends DataBindingActivity<ActivityMainBinding> imple
 
     @Override
     public void onItemClick(View view, BleDevice device) {
+        onStopClick(null);
         open(device);
     }
 

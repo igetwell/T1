@@ -2,7 +2,8 @@ package tech.getwell.demo.bles;
 
 import android.util.Log;
 import java.io.InputStream;
-import tech.getwell.t1.beans.RawSmo2Data;
+
+import tech.getwell.t1.beans.MotionMessage;
 import tech.getwell.t1.beans.Response;
 import tech.getwell.t1.utils.LogUtils;
 import tech.getwell.t1.utils.SmoothSom2;
@@ -103,9 +104,9 @@ public class T1ReadTask extends Thread{
                 listener.onFirmwareVersionCallback(response.isFirmwareValid(),response.getFirmwareVersion());
                 break;
             case Response.SMO2:
-                RawSmo2Data rawSmo2Data = new RawSmo2Data(response.toRawByteData());
-                rawSmo2Data.smoothSmo2 = getSmoothValue(rawSmo2Data.smo2);
-                listener.onSmo2Callback(rawSmo2Data);
+                MotionMessage motionMessage = new MotionMessage(response.toRawByteData());
+                motionMessage.smoothSmo2 = getSmoothValue(motionMessage.smo2);
+                listener.onSmo2Callback(motionMessage);
                 break;
         }
     }

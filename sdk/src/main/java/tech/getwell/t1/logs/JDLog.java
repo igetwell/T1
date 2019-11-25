@@ -10,7 +10,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import tech.getwell.t1.beans.RawDataLog;
-import tech.getwell.t1.beans.RawSmo2Data;
+import tech.getwell.t1.beans.MotionMessage;
 import tech.getwell.t1.beans.RunningLog;
 
 /**
@@ -154,8 +154,8 @@ public class JDLog {
     /**
      * 添加记录内容
      */
-    public void addRawDataLog(RawSmo2Data rawSmo2Data) throws IOException{
-        writeDataLine(originalRandomFile, toOriginalData(rawSmo2Data.toRawDataLog()).toString());
+    public void addRawDataLog(MotionMessage motionMessage) throws IOException{
+        writeDataLine(originalRandomFile, toOriginalData(motionMessage.toRawDataLog()).toString());
 
     }
 

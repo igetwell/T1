@@ -21,14 +21,20 @@ public class Response {
      */
     public static final int FIRMWARE_VERSION = 1;
     /**
+     * 肌氧数据类型
+     */
+    public static final int SMO2 = 2;
+    /**
+     * 更新固件类型
+     */
+    public static final int UPDATE_FIRMWARE = 3;
+
+    /**
      * 开始肌氧数据类型
      */
     public static final int SOM2_START = 2;
 
-    /**
-     * 肌氧数据类型
-     */
-    public static final int SMO2 = 2;
+
 
     /**
      * 结束肌氧数据类型
@@ -52,8 +58,20 @@ public class Response {
      */
     private byte[] bytes;
 
+    private byte[] buffer;
+
+    private int num;
+
     public Response(InputStream stream) throws IOException{
         read(stream);
+    }
+
+    public byte[] getBuffer() {
+        return buffer;
+    }
+
+    public int getNum() {
+        return num;
     }
 
     /**
@@ -62,8 +80,8 @@ public class Response {
      * @throws IOException
      */
     void read(InputStream stream) throws IOException {
-        int num = 0;
-        byte[] buffer = new byte[1024];
+        num = 0;
+        buffer = new byte[1024];
         num = stream.read(buffer);
 
         if(num <= 0){
@@ -84,7 +102,7 @@ public class Response {
             data.append(hex);
         }
         LogUtils.d(" 响应数据为: "+data.toString());
-        this.type = isFirmwareVersion() ? FIRMWARE_VERSION : isSMO2() ? SMO2 : DEFAULT;
+        this.type = isFirmwareVersion() ? FIRMWARE_VERSION : isSMO2() ? SMO2 : isUpdateFirmware() ? UPDATE_FIRMWARE : DEFAULT;
     }
 
     /**
@@ -107,6 +125,10 @@ public class Response {
     // //73a12e01724a569c00074e3d3c013c5c140443e8310244a9f61848e5cb15313c96032e205609331dfc0733a19a3f0f2404
     boolean isSMO2(){
         return this.data != null && (data.toString().startsWith("73a106") || data.toString().startsWith("73a12e")) && data.toString().length() >= 18;
+    }
+
+    boolean isUpdateFirmware(){
+        return this.data != null && this.data.toString().startsWith("739508");
     }
 
 

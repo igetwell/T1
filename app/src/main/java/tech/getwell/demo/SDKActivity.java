@@ -6,18 +6,25 @@ import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 import android.view.View;
 import androidx.lifecycle.ViewModelProviders;
+import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 import tech.getwell.demo.beans.BleDevice;
 import tech.getwell.t1.JDT1;
+import tech.getwell.t1.JDT1ParserClient;
 import tech.getwell.t1.beans.Callback;
 import tech.getwell.demo.databinding.ActivitySdk2Binding;
-import tech.getwell.t1.beans.RawSmo2Data;
+import tech.getwell.t1.beans.FirmwareVersionMessage;
+import tech.getwell.t1.beans.MotionMessage;
+import tech.getwell.t1.beans.UpdateFirmwareMessage;
+import tech.getwell.t1.listeners.OnJDT1Callback;
 import tech.getwell.t1.listeners.OnJDT1Listener;
 import tech.getwell.t1.listeners.OnJDT1RawDataListener;
 import tech.getwell.t1.logs.JDLog;
+import tech.getwell.t1.throwables.NotStartException;
 import tech.getwell.t1.utils.LogUtils;
 import tech.getwell.demo.viewmodels.SDKViewModel;
+import tech.getwell.t1.utils.Motion;
 
 /**
  * @author Wave
@@ -32,6 +39,7 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
     JDT1 jdt1;
 
     JDLog jdLog;
+
     @Override
     protected int layoutId() {
         return R.layout.activity_sdk_2;
@@ -41,7 +49,11 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
     public void onAfter() {
         model = ViewModelProviders.of(this).get(SDKViewModel.class);
         // 开始观察 name
-        model.getCallbackMutableLiveData().observe(this,(callback)-> onT1DataChanged(callback));
+        model.getMotionMessageMutableLiveData().observe(this,(motionMessage)-> onT1DataChanged(motionMessage));
+        model.getFirmwareVersionMutableLiveData().observe(this,(firmwareVersionMessage)->onFirmwareVersionChanged(firmwareVersionMessage));
+        model.getUpdateFirmwareMessageMutableLiveData().observe(this, updateFirmwareMessage -> onUpdateFirmwareChanged(updateFirmwareMessage));
+
+
         BleDevice device = getIntent().getParcelableExtra(EXTRA_T1);
         onInitBle(BluetoothAdapter.getDefaultAdapter().getRemoteDevice(device.address));
         try{
@@ -52,8 +64,16 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
         }
     }
 
-    void onT1DataChanged(Callback callback){
-        getViewDataBinding().setData(callback);
+    void onT1DataChanged(MotionMessage motionMessage){
+        getViewDataBinding().setMotionMessage(motionMessage);
+    }
+
+    void onFirmwareVersionChanged(FirmwareVersionMessage firmwareVersionMessage){
+        getViewDataBinding().setFirmwareVersion(firmwareVersionMessage);
+    }
+
+    void onUpdateFirmwareChanged(UpdateFirmwareMessage updateFirmwareMessage){
+        getViewDataBinding().setUpdateFirmware(updateFirmwareMessage);
     }
 
     @Override
@@ -65,33 +85,92 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
              Log.e("Callback codes", "error codes : "+callback.code);
              return;
          }
-        model.getCallbackMutableLiveData().postValue(callback);
+         LogUtils.d("固件版本号为: = "+callback.version);
+        //model.getCallbackMutableLiveData().postValue(callback);
     }
 
     @Override
-    public void onRawDataCallback(RawSmo2Data rawSmo2Data) {
-//        try{
-//            jdLog.addRawDataLog(rawSmo2Data);
-//        }catch (IOException e){
-//            e.printStackTrace();
-//        }
+    public void onRawDataCallback(MotionMessage motionMessage) {
+        //motionMessage.
+        try{
+            jdLog.addRawDataLog(motionMessage);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     BluetoothSocket bluetoothSocket;
 
+    JDT1ParserClient jdt1ParserClient;
+
     void onInitBle(BluetoothDevice device){
         try{
+            File logs = new File(this.getCacheDir().getAbsolutePath()+"/t1Logs");
+            if(!logs.exists()){
+                logs.mkdirs();
+            }
+            //HdDataDeal.setLibDebugLog(true,logs.getAbsolutePath());
+
             UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
             // 建立蓝牙
             bluetoothSocket = device.createInsecureRfcommSocketToServiceRecord(uuid);
             bluetoothSocket.connect();
-            LogUtils.d("连接成功...");
+            //LogUtils.d("连接成功...");
             // 读取数据
-            jdt1 = new JDT1(true);
-            jdt1.setBluetoothSocket(bluetoothSocket);
-            jdt1.setRawDataListener(this);
-            jdt1.setListener(this);
-            jdt1.start();
+            //jdt1 = new JDT1(true);
+//            jdt1 = new JDT1();
+//            jdt1.setBluetoothDevice(device);
+//            jdt1.setBluetoothSocket(bluetoothSocket);
+//            jdt1.setListener(this);
+            jdt1ParserClient = new JDT1ParserClient.Builder()
+                    .setBluetoothDevice(device)
+                    .setBluetoothSocket(bluetoothSocket)
+                    .setDebugLog(true)
+                    .setCallback(new OnJDT1Callback() {
+                        /**
+                         * 异常
+                         * @param throwable 异常信息
+                         */
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            if(throwable instanceof NotStartException){
+                                jdt1ParserClient.start();
+                                LogUtils.d("启动读取数据...");
+                                return;
+                            }
+                            //LogUtils.d(throwable);
+                        }
+
+                        /**
+                         * 固件版本信息回调
+                         * @param firmwareVersionMessage 返回固件版本信息
+                         */
+                        @Override
+                        public void onVersionCallback(FirmwareVersionMessage firmwareVersionMessage) {
+                            model.getFirmwareVersionMutableLiveData().postValue(firmwareVersionMessage);
+                        }
+
+                        /**
+                         * 执行运动时回调
+                         * @param motionMessage 肌氧数据
+                         */
+                        @Override
+                        public void onMotionCallback(MotionMessage motionMessage) {
+                            model.getMotionMessageMutableLiveData().postValue(motionMessage);
+                        }
+
+                        /**
+                         * 执行固件更新时回调
+                         * @param updateFirmwareMessage
+                         */
+                        @Override
+                        public void onUpdateFirmwareCallback(UpdateFirmwareMessage updateFirmwareMessage) {
+                            model.getUpdateFirmwareMessageMutableLiveData().postValue(updateFirmwareMessage);
+                        }
+                    })
+                    .build();
+
+            //jdt1ParserClient.startMotion(Motion.RUNNING_DEBUG);
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -99,16 +178,52 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
     }
 
     public void onStartRunningClick(View view){
-        if(jdt1 != null)jdt1.start();
+        //if(jdt1 != null)jdt1.start();
+        if(jdt1ParserClient != null) jdt1ParserClient.startMotion(Motion.RUNNING);
     }
 
+    public void onMotion2Click(View view){
+        //if(jdt1 != null)jdt1.start();
+        if(jdt1ParserClient != null) jdt1ParserClient.startMotion(Motion.RUNNING_DEBUG);
+    }
+
+    public void onMotion3Click(View view){
+        //if(jdt1 != null)jdt1.start();
+        if(jdt1ParserClient != null) jdt1ParserClient.startMotion(Motion.RESISTANCE);
+    }
+
+    public void onMotion4Click(View view){
+        //if(jdt1 != null)jdt1.start();
+        if(jdt1ParserClient != null) jdt1ParserClient.startMotion(Motion.RESISTANCE_DEBUG);
+    }
+
+    public void onUpdateFirmwareClick(View view){
+        File file = new File( this.getCacheDir().getAbsolutePath() +"/fw_forusb_V0228.bin");
+        if(jdt1 != null)jdt1.updateFirmware(file);
+        if(jdt1ParserClient != null) jdt1ParserClient.refreshFirmware(file);
+    }
+
+
+    public void onQueryVersionClick(View view){
+//        if(jdt1 != null)jdt1.stop();
+//        try{
+//            jdLog.close();
+//        }catch (IOException e){
+//            e.printStackTrace();
+//        }
+        if(jdt1ParserClient != null) jdt1ParserClient.queryFirmwareVersion();
+    }
+
+
     public void onStopClick(View view){
-        if(jdt1 != null)jdt1.stop();
-        try{
-            jdLog.close();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+//        if(jdt1 != null)jdt1.stop();
+//        try{
+//            jdLog.close();
+//        }catch (IOException e){
+//            e.printStackTrace();
+//        }
+        if(jdt1ParserClient != null) jdt1ParserClient.stopMotion();
+        model.getMotionMessageMutableLiveData().setValue(new MotionMessage());
     }
 
     @Override
@@ -121,6 +236,4 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
         }
         super.onDestroy();
     }
-
-
 }

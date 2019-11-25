@@ -23,5 +23,11 @@
         <item>未知异常</item>
     </string-array>
 
+    <string name="set_version">当前版本号:%s</string>
+
+    <string name="update_firmware">更新固件</string>
+    <string name="update_firmware_ing">正在更新固件中...</string>
+    <string name="update_firmware_error">更新固件失败</string>
+    <string name="update_firmware_success">更新固件成功</string>
 
 </resources>

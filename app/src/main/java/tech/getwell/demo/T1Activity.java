@@ -6,7 +6,7 @@ import android.widget.Toast;
 import androidx.lifecycle.ViewModelProviders;
 import java.io.IOException;
 import tech.getwell.demo.beans.BleDevice;
-import tech.getwell.t1.beans.RawSmo2Data;
+import tech.getwell.t1.beans.MotionMessage;
 import tech.getwell.t1.beans.Response;
 import tech.getwell.t1.beans.Smo2Data;
 import tech.getwell.demo.bles.T1ConnectTask;
@@ -81,17 +81,17 @@ public class T1Activity extends DataBindingActivity<ActivityT1Binding> implement
     }
 
     @Override
-    public void onSmo2Callback(RawSmo2Data rawSmo2Data) {
-        //RawSmo2Data rawSmo2Data = new RawSmo2Data(rawByteData);
-        LogUtils.d("onSmo2Callback =  "+rawSmo2Data.toDataString());
+    public void onSmo2Callback(MotionMessage motionMessage) {
+        //MotionMessage motionMessage = new MotionMessage(rawByteData);
+        LogUtils.d("onSmo2Callback =  "+ motionMessage.toDataString());
         // 写入文件中..
 //        try{
-//            if(JDLog != null) JDLog.addRunningLog(rawSmo2Data);
+//            if(JDLog != null) JDLog.addRunningLog(motionMessage);
 //        }catch (IOException e){
 //            e.printStackTrace();
 //        }
         // 非UI线程, 需要使用 postValue
-        model.getSmo2DataMutableLiveData().postValue(rawSmo2Data);
+        model.getSmo2DataMutableLiveData().postValue(motionMessage);
         //model.getSmo2DataMutableLiveData().postValue(new Smo2Data(rawByteData));
     }
 

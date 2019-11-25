@@ -1,6 +1,6 @@
 package tech.getwell.demo.bles.listeners;
 
-import tech.getwell.t1.beans.RawSmo2Data;
+import tech.getwell.t1.beans.MotionMessage;
 import tech.getwell.t1.beans.Response;
 
 /**
@@ -16,9 +16,9 @@ public interface OnT1ReadListener {
 
     /**
      * 设备响应 肌氧数据回调
-     * @param rawSmo2Data
+     * @param motionMessage
      */
-    void onSmo2Callback(RawSmo2Data rawSmo2Data);
+    void onSmo2Callback(MotionMessage motionMessage);
 
     /**
      * 设备响应 当前固件版本号
