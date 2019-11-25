@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 
 import com.jd.hd_deal.HdDataDeal;
+import com.jd.hd_deal.OnDataReceiveListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +26,7 @@ import tech.getwell.t1.utils.LogUtils;
  * @author Wave
  * @date 2019/9/6
  */
-public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListener, CommandManagement.OnCommandManagementListener, HdDataDeal.OnDataReceiveListener {
+public class JDT1 implements OnReadListener, To2TimeOutTask.OnTimeOutTaskListener, CommandManagement.OnCommandManagementListener, OnDataReceiveListener {
 
     boolean isRunning;
 

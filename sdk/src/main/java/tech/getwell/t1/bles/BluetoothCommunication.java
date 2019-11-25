@@ -3,6 +3,7 @@ package tech.getwell.t1.bles;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import com.jd.hd_deal.HdDataDeal;
+import com.jd.hd_deal.OnDataReceiveListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import tech.getwell.t1.throwables.NotStartException;
 import tech.getwell.t1.utils.LogUtils;
 import tech.getwell.t1.utils.Motion;
 
-public abstract class BluetoothCommunication implements OnReadListener,HdDataDeal.OnDataReceiveListener{
+public abstract class BluetoothCommunication implements OnReadListener, OnDataReceiveListener {
 
     private BluetoothDevice bluetoothDevice;
 
@@ -55,14 +56,14 @@ public abstract class BluetoothCommunication implements OnReadListener,HdDataDea
             return;
         }
         if(!isFirmwareFile(firmwareFile)){
-            onError(new NotFirmwareFileException(" not firmwareFile"));
+            onError(new NotFirmwareFileException("not firmwareFile"));
             return;
         }
         HdDataDeal.startUpdateHardWare(firmwareFile.getAbsolutePath(),bluetoothDevice.getAddress());
     }
 
     boolean isFirmwareFile(File file){
-        return file.getName().lastIndexOf("\\.bin") > -1;
+        return file.getName().lastIndexOf("\\.bin") <= -1;
     }
 
     /**

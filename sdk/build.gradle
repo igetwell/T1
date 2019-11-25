@@ -19,7 +19,7 @@ android {
             //设置支持的SO库架构（开发者可以根据需要，选择一个或多个平台的so）
             //abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86", "arm64-v8a", "x86_64"
             //abiFilters "armeabi", "x86"
-            abiFilters "armeabi-v7a", "x86"
+            abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
         }
     }
 
@@ -31,8 +31,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
 }

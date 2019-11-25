@@ -134,11 +134,15 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
                         @Override
                         public void onFailure(Throwable throwable) {
                             if(throwable instanceof NotStartException){
-                                jdt1ParserClient.start();
-                                LogUtils.d("启动读取数据...");
+                                //jdt1ParserClient.start();
+                                LogUtils.d("未启动读取数据..."+throwable.getMessage());
+                                return;
+                            }else if(throwable instanceof IOException ){
+                                LogUtils.d("蓝牙连接异常,读取数据失败 : "+throwable.getMessage());
                                 return;
                             }
-                            //LogUtils.d(throwable);
+
+                            LogUtils.d(throwable.getMessage());
                         }
 
                         /**
@@ -157,6 +161,11 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
                         @Override
                         public void onMotionCallback(MotionMessage motionMessage) {
                             model.getMotionMessageMutableLiveData().postValue(motionMessage);
+                            try{
+                                if(jdLog != null)jdLog.addRawDataLog(motionMessage);
+                            }catch (IOException e){
+                                e.printStackTrace();
+                            }
                         }
 
                         /**
@@ -169,7 +178,7 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
                         }
                     })
                     .build();
-
+            jdt1ParserClient.start();
             //jdt1ParserClient.startMotion(Motion.RUNNING_DEBUG);
         }catch (IOException e){
             e.printStackTrace();

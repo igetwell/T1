@@ -2,9 +2,6 @@ package tech.getwell.t1.bles;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-
-import java.io.File;
-
 import tech.getwell.t1.beans.FirmwareVersionMessage;
 import tech.getwell.t1.beans.MotionMessage;
 import tech.getwell.t1.beans.UpdateFirmwareMessage;
