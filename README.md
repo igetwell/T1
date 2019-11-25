@@ -1,7 +1,7 @@
 #### T1 SDK_v2.0.0 
-
-
+--------
 ```
+mermaid
 graph TD
     A[T1_SKD_V2]-->B(数据采集)
     A --> C[数据解码]
@@ -171,7 +171,7 @@ datas | int[] | 十进制(原始数据值)
 常见异常信息
 -----------
 异常 | 说明
----|---|---
+---|---
 BluetoothDeviceException | 初始化失败,未设置可用的BluetoothDevice
 BluetoothSocketException | 初始化失败,未设置可用的BluetoothSocket
 IOException | BluetoothSocket 连接异常,无法正常读写
