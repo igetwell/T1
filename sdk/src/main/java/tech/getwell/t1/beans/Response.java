@@ -62,6 +62,12 @@ public class Response {
 
     private int num;
 
+    private final int SMO2ValidLength = 98;
+
+    public int getSMO2ValidLength() {
+        return SMO2ValidLength;
+    }
+
     public Response(InputStream stream) throws IOException{
         read(stream);
     }
@@ -72,6 +78,26 @@ public class Response {
 
     public int getNum() {
         return num;
+    }
+
+    public void setNum(int num) {
+        this.num = num;
+    }
+
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
+    }
+
+    public byte[] getBytes() {
+        return bytes;
+    }
+
+    public void setData(StringBuilder data) {
+        this.data = data;
+    }
+
+    public StringBuilder getData() {
+        return data;
     }
 
     /**
@@ -102,37 +128,47 @@ public class Response {
             data.append(hex);
         }
         LogUtils.d(" 响应数据为: "+data.toString());
+        resetType();
+    }
+
+    public void resetType(){
         this.type = isFirmwareVersion() ? FIRMWARE_VERSION : isSMO2() ? SMO2 : isUpdateFirmware() ? UPDATE_FIRMWARE : DEFAULT;
     }
 
-    /**
-     * 单独功能提取：从原始数据转换成十六进制的字符串
-     */
-    void withdrawResult(byte[] b, int num) {
-        if (data == null) {
-            data = new StringBuilder();
-        }
-        data.setLength(0);
-        for (int i = 0; i < num; i++) {
-            String hex = Integer.toHexString(b[i] & 0xFF);
-            if (hex.length() == 1) {
-                hex = '0' + hex;
-            }
-            data.append(hex);
-        }
-        this.type = isFirmwareVersion() ? FIRMWARE_VERSION : isSMO2() ? SMO2 : DEFAULT;
-    }
-    // //73a12e01724a569c00074e3d3c013c5c140443e8310244a9f61848e5cb15313c96032e205609331dfc0733a19a3f0f2404
-    boolean isSMO2(){
+    //73a12e01724a569c00074e3d3c013c5c140443e8310244a9f61848e5cb15313c96032e205609331dfc0733a19a3f0f2404
+    public boolean isSMO2(){
         return this.data != null && (data.toString().startsWith("73a106") || data.toString().startsWith("73a12e")) && data.toString().length() >= 18;
     }
 
-    boolean isUpdateFirmware(){
+    /**
+     * 是否为 带原始数据的SMO2 类型
+     * @return
+     */
+    public boolean isRawSMO2(){
+        return this.data != null && data.toString().startsWith("73a12e");
+    }
+
+    /**
+     * 是否为有效/完整的 带原始smo2的数据
+     * @return
+     */
+    public boolean isValidRawSMO2(){
+        return isRawSMO2() && isValidRawSMO2Length();
+    }
+
+    /**
+     * 原始smo2 长度是否合法
+     * @return
+     */
+    public boolean isValidRawSMO2Length(){
+        return data.length() == getSMO2ValidLength();
+    }
+
+    public boolean isUpdateFirmware(){
         return this.data != null && this.data.toString().startsWith("739508");
     }
 
-
-    boolean isFirmwareVersion(){
+    public boolean isFirmwareVersion(){
         return this.data != null && data.toString().startsWith("736a0a02");
     }
 

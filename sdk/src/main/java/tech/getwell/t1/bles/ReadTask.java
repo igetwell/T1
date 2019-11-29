@@ -3,6 +3,9 @@ package tech.getwell.t1.bles;
 import android.util.Log;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import tech.getwell.t1.beans.FirmwareVersionMessage;
 import tech.getwell.t1.beans.MotionMessage;
@@ -62,16 +65,36 @@ public class ReadTask extends Thread {
     @Override
     public void run() {
         super.run();
+        // 上一次的数据..
+        Response mLastResponse = null;
         //开始读取数据
         while (isRunning) {
             if (Thread.interrupted() || this.stream == null) {
                 isRunning = false;
+                //mLastResponse = null;
                 Log.e("T1ReadTask", " 连接已断开,结束读取数据 ");
                 return;
             }
             try {
                 Response response = new Response(this.stream);
-                callback(response);
+                // 需要拼接
+                if(mLastResponse != null && mLastResponse.isRawSMO2() && !mLastResponse.isValidRawSMO2Length()){
+                    //response.data = mLastResponse.data.append(response.data);
+                    response = merge(mLastResponse,response);
+                    LogUtils.e("原始数据不够长 进行拼接 :"+response.data);
+                }
+                mLastResponse = response;
+                if(mLastResponse.isRawSMO2() && !mLastResponse.isValidRawSMO2Length()){
+                    LogUtils.d("原始数据未结束,待拼接完整");
+                    if(mLastResponse.data != null && mLastResponse.data.length() > mLastResponse.getSMO2ValidLength()){
+                        mLastResponse = null;
+                        LogUtils.d("原始数据长度超标,丢掉数据异常不进行解析了");
+                    }
+                    continue;
+                }
+                // 进行解析转换
+                // LogUtils.d(" 返回数据 : "+mLastResponse.data.toString());
+                if(mLastResponse != null)callback(mLastResponse);
                 // 不能全部占用CPU，要稍微释放
                 Thread.sleep(10);
             } catch (Exception e) {
@@ -80,6 +103,21 @@ public class ReadTask extends Thread {
                 return;
             }
         }
+    }
+
+    Response merge(Response mLastResponse,Response response){
+        // 合并数据
+        byte[] newBytes = new byte[mLastResponse.getBytes().length + response.getBytes().length];
+        System.arraycopy(mLastResponse.getBytes(), 0, newBytes, 0, mLastResponse.getBytes().length);
+        System.arraycopy(response.getBytes(), 0, newBytes, mLastResponse.getBytes().length, response.getBytes().length);
+        // 合并长度
+        int newNum = mLastResponse.getNum() + response.getNum();
+        // 合并
+        mLastResponse.getData().append(response.data);
+        mLastResponse.setNum(newNum);
+        mLastResponse.setBytes(newBytes);
+        mLastResponse.resetType();
+        return mLastResponse;
     }
 
     public void clear() {

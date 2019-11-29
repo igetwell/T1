@@ -50,7 +50,7 @@ dependencies {
     api 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha02'
     implementation 'androidx.recyclerview:recyclerview:1.1.0-beta01'
 
-    //api 'com.github.igetwell:T1:2.0.0'
+    //api 'com.github.igetwell:T1:2.0.1'
     api project(path: ':sdk')
 
 

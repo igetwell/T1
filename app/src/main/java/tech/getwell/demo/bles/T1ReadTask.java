@@ -54,8 +54,11 @@ public class T1ReadTask extends Thread{
                 Log.e("T1ReadTask"," 连接已断开,结束读取数据 ");
                 return;
             }
+
             try {
-                callback(new Response(this.stream));
+                Response response = new Response(this.stream);
+
+                callback(response);
                 // 不能全部占用CPU，要稍微释放
                 Thread.sleep(10);
             }catch (Exception e){

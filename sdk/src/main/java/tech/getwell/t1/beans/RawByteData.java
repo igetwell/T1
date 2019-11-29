@@ -27,6 +27,15 @@ public class RawByteData extends Smo2ByteData {
         }
     }
 
+    byte[] newDefautOthers(){
+        byte[] others = new byte[48 - 9];
+        for (int i = 0; i < others.length; i++) {
+            others[i] = -1;
+        }
+        return others;
+    }
+
+
     @Override
     public StringBuilder toHexStringBuilder() {
         return super.toHexStringBuilder();

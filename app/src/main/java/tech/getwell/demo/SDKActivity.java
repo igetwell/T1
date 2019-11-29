@@ -160,7 +160,9 @@ public class SDKActivity extends DataBindingActivity<ActivitySdk2Binding> implem
                          */
                         @Override
                         public void onMotionCallback(MotionMessage motionMessage) {
+                            LogUtils.d("原始数据为 :"+Utils.toRawDatas(motionMessage.datas));
                             model.getMotionMessageMutableLiveData().postValue(motionMessage);
+
                             try{
                                 if(jdLog != null)jdLog.addRawDataLog(motionMessage);
                             }catch (IOException e){
