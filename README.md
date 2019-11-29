@@ -1,4 +1,4 @@
-#### T1 SDK_v2.0.0 
+#### T1_SDK_v2.0.1 
 --------
 ```
 mermaid
@@ -21,7 +21,7 @@ allprojects {
 
 dependencies {
     ...
-    implementation 'com.github.igetwell:T1:2.0.0'
+    implementation 'com.github.igetwell:T1:2.0.1'
 }
 ```
 Usage
